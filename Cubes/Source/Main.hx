@@ -104,10 +104,8 @@ class Main extends Application {
 
 		var model = new Matrix4 ();
 
-		var y = 0;
-		while (y < 11) {
-			var x = 0;
-			while (x < 11) {
+		for (y in 0...11) {
+			for (x in 0...11) {
 
 				model.identity ();
 				model.appendRotation (degrees (time + x*0.21), new Vector4 (0, 1, 0));
@@ -126,9 +124,7 @@ class Main extends Application {
 				context.setIndexSource (indexBuffer);
 				context.drawIndexed (Primitive.Triangle, 8, 0, 12);
 
-				x++;
 			}
-			y++;
 		}
 
 	}
