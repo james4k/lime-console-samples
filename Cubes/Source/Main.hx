@@ -11,6 +11,7 @@ import lime.graphics.console.Primitive;
 import lime.graphics.console.IndexBuffer;
 import lime.graphics.console.VertexBuffer;
 import lime.system.System;
+import lime.utils.Float32Array;
 
 
 class Main extends Application {
@@ -30,42 +31,54 @@ class Main extends Application {
 
 	public override function init (context:RenderContext):Void {
 
-		shader = new Shader ("basic");	
+		switch (context) {
 
-		vertexBuffer = new VertexBuffer (VertexDecl.PositionColor, 8);	
-		var out = vertexBuffer.lock ();
-		out.vec3 (-1, 1, 1);
-		out.color (0x00, 0x00, 0x00, 0xff);
-		out.vec3 (1, 1, 1);
-		out.color (0xff, 0x00, 0x00, 0xff);
-		out.vec3 (-1, -1, 1);
-		out.color (0x00, 0xff, 0x00, 0xff);
-		out.vec3 (1, -1, 1);
-		out.color (0xff, 0xff, 0x00, 0xff);
-		out.vec3 (-1, 1, -1);
-		out.color (0x00, 0x00, 0xff, 0xff);
-		out.vec3 (1, 1, -1);
-		out.color (0xff, 0x00, 0xff, 0xff);
-		out.vec3 (-1, -1, -1);
-		out.color (0x00, 0xff, 0xff, 0xff);
-		out.vec3 (1, -1, -1);
-		out.color (0xff, 0xff, 0xff, 0xff);
-		vertexBuffer.unlock ();
+			case CONSOLE (ctx):
 
-		indexBuffer = new IndexBuffer ([
-			0, 1, 2, // 0
-			1, 3, 2,
-			4, 6, 5, // 2
-			5, 6, 7,
-			0, 2, 4, // 4
-			4, 2, 6,
-			1, 5, 3, // 6
-			5, 7, 3,
-			0, 4, 1, // 8
-			4, 5, 1,
-			2, 3, 6, // 10
-			6, 3, 7,
-		]);	
+				shader = ctx.lookupShader ("basic");
+
+				vertexBuffer = ctx.createVertexBuffer (VertexDecl.PositionColor, 8);	
+				var out = vertexBuffer.lock ();
+				out.vec3 (-1, 1, 1);
+				out.color (0x00, 0x00, 0x00, 0xff);
+				out.vec3 (1, 1, 1);
+				out.color (0xff, 0x00, 0x00, 0xff);
+				out.vec3 (-1, -1, 1);
+				out.color (0x00, 0xff, 0x00, 0xff);
+				out.vec3 (1, -1, 1);
+				out.color (0xff, 0xff, 0x00, 0xff);
+				out.vec3 (-1, 1, -1);
+				out.color (0x00, 0x00, 0xff, 0xff);
+				out.vec3 (1, 1, -1);
+				out.color (0xff, 0x00, 0xff, 0xff);
+				out.vec3 (-1, -1, -1);
+				out.color (0x00, 0xff, 0xff, 0xff);
+				out.vec3 (1, -1, -1);
+				out.color (0xff, 0xff, 0xff, 0xff);
+				vertexBuffer.unlock ();
+
+				var indices:Array<cpp.UInt16> = [
+					0, 1, 2, // 0
+					1, 3, 2,
+					4, 6, 5, // 2
+					5, 6, 7,
+					0, 2, 4, // 4
+					4, 2, 6,
+					1, 5, 3, // 6
+					5, 7, 3,
+					0, 4, 1, // 8
+					4, 5, 1,
+					2, 3, 6, // 10
+					6, 3, 7,
+				];
+				indexBuffer = ctx.createIndexBuffer (
+					cpp.Pointer.arrayElem (indices, 0),
+					indices.length
+				);
+
+			default:
+
+		}
 
 	}
 	
@@ -118,8 +131,11 @@ class Main extends Application {
 				model.append (proj);
 				model.transpose ();
 
+				var matrixArray:Float32Array = model;
+				var matrixPtr = cpp.Pointer.arrayElem (matrixArray.buffer.getData (), 0).raw;
+
 				context.bindShader (shader);
-				context.setVertexShaderConstantMatrix (0, model);
+				context.setVertexShaderConstantF (0, untyped __cpp__ ("(float *){0}", matrixPtr), 4);
 				context.setVertexSource (vertexBuffer);
 				context.setIndexSource (indexBuffer);
 				context.drawIndexed (Primitive.Triangle, 8, 0, 12);
