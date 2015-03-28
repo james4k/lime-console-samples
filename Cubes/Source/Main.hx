@@ -6,6 +6,7 @@ import lime.math.Matrix4;
 import lime.math.Vector4;
 import lime.graphics.RenderContext;
 import lime.graphics.ConsoleRenderContext;
+import lime.graphics.console.RenderState;
 import lime.graphics.console.Shader;
 import lime.graphics.console.PointerUtil;
 import lime.graphics.console.Primitive;
@@ -90,7 +91,7 @@ class Main extends Application {
 		switch (context) {
 			
 			case CONSOLE (context):
-				
+
 				context.clear (0xc0, 0xff, 0x00, 0xff);
 				
 				renderCubes (context);
@@ -118,6 +119,10 @@ class Main extends Application {
 		proj[14] = -zNear / (zFar - zNear);
 
 		var model = new Matrix4 ();
+
+		context.setRasterizerState (CULLCW_SOLID);
+		context.setDepthStencilState (DEPTHTESTON_DEPTHWRITEON_DEPTHLESS_STENCILOFF);
+		context.setBlendState (NONE_RGB);
 
 		for (y in 0...11) {
 			for (x in 0...11) {
