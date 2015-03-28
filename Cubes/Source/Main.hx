@@ -7,9 +7,11 @@ import lime.math.Vector4;
 import lime.graphics.RenderContext;
 import lime.graphics.ConsoleRenderContext;
 import lime.graphics.console.Shader;
+import lime.graphics.console.PointerUtil;
 import lime.graphics.console.Primitive;
 import lime.graphics.console.IndexBuffer;
 import lime.graphics.console.VertexBuffer;
+import lime.graphics.console.VertexDecl;
 import lime.system.System;
 import lime.utils.Float32Array;
 
@@ -131,11 +133,8 @@ class Main extends Application {
 				model.append (proj);
 				model.transpose ();
 
-				var matrixArray:Float32Array = model;
-				var matrixPtr = cpp.Pointer.arrayElem (matrixArray.buffer.getData (), 0).raw;
-
 				context.bindShader (shader);
-				context.setVertexShaderConstantF (0, untyped __cpp__ ("(float *){0}", matrixPtr), 4);
+				context.setVertexShaderConstantF (0, PointerUtil.fromMatrix (model), 4);
 				context.setVertexSource (vertexBuffer);
 				context.setIndexSource (indexBuffer);
 				context.drawIndexed (Primitive.Triangle, 8, 0, 12);
