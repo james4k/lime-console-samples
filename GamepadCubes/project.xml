@@ -8,6 +8,4 @@
 	
 	<haxelib name="lime" />
 	
-	<assets path="Assets" rename="assets" />
-	
 </project>
