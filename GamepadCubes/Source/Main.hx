@@ -4,6 +4,7 @@ package;
 import lime.app.Application;
 import lime.math.Matrix4;
 import lime.math.Vector4;
+import lime.graphics.Renderer;
 import lime.graphics.RenderContext;
 import lime.graphics.ConsoleRenderContext;
 import lime.graphics.console.RenderState;
@@ -42,6 +43,8 @@ class Main extends Application {
 	private var buttonB:Bool;
 	private var buttonX:Bool;
 	private var buttonY:Bool;
+
+	private var inited = false;
 	
 	
 	public function new () {
@@ -51,7 +54,7 @@ class Main extends Application {
 	}
 
 
-	public override function init (context:RenderContext):Void {
+	private function renderInit (context:RenderContext):Void {
 
 		switch (context) {
 
@@ -105,8 +108,15 @@ class Main extends Application {
 	}
 	
 	
-	public override function render (context:RenderContext):Void {
+	public override function render (renderer:Renderer):Void {
 		
+		var context = renderer.context;
+
+		if (!inited) {
+			renderInit (context);
+			inited = true;
+		}
+
 		switch (context) {
 			
 			case CONSOLE (context):
